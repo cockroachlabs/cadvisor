@@ -290,10 +290,14 @@ func (m *manager) Start() error {
 	}
 	m.containerWatchers = append(m.containerWatchers, rawWatcher)
 
-	// Watch for OOMs.
-	err = m.watchForNewOoms()
-	if err != nil {
-		klog.Warningf("Could not configure a source for OOM detection, disabling OOM events: %v", err)
+	// Only enable watching for OOMs in the event that "oom_event" is listed as
+	// an included metric.
+	if _, ok := m.includedMetrics[container.OOMMetrics]; ok {
+		// Watch for OOMs.
+		err = m.watchForNewOoms()
+		if err != nil {
+			klog.Warningf("Could not configure a source for OOM detection, disabling OOM events: %v", err)
+		}
 	}
 
 	// If there are no factories, don't start any housekeeping and serve the information we do have.
