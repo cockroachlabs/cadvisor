@@ -79,9 +79,14 @@ func Info(sysFs sysfs.SysFs, fsInfo fs.FsInfo, inHostNamespace bool) (*info.Mach
 		return nil, err
 	}
 
-	nvmInfo, err := nvm.GetInfo()
-	if err != nil {
-		return nil, err
+	// Completely disable NVMInfo as it is unneeded (duplicated by
+	// node-exporter) and causes warnings/error messages.
+	nvmInfo := info.NVMInfo{}
+	if false {
+		nvmInfo, err = nvm.GetInfo()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	hugePagesInfo, err := sysinfo.GetHugePagesInfo(sysFs, hugepagesDirectory)
